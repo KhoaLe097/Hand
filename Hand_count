@@ -1,0 +1,39 @@
+import cv2
+# import mediapipe
+import hand as hd
+
+#Thêm video vào window
+
+cap = cv2.VideoCapture("olds\Feb-03\mirror.mp4")
+detector = hd.handDetector(maxHands = 2, detectionCon= 1)
+# list_finger = []
+
+
+while True:
+    ret,frame = cap.read()
+    # print(ret) 
+    frame = detector.findHands(frame) #tìm tay và add các điểm vào frame
+    list1 = detector.findPosition(frame,handNo = 0, draw = False)
+    # list1_1 = detector.findPosition(frame,handNo = 1, draw = False)
+    list2 = [4,8,12,16,20] #index của các đầu ngón tay
+    list3 = []# đếm số ngón tay mở
+    for i in range (1,5):
+        
+        if list1[list2[i]][2] < list1[list2[i]-2][2]:
+            list3.append(1)
+            # songontay = list3.count(1)
+            # print(list3)
+            # print('So ngon tay',songontay)
+    if list1[list2[0]][1] < list1[list2[0]-1][1]:
+        list3.append(1)
+    
+    
+    songontay = list3.count(1)
+    #print(list1)
+    # print('So ngon tay',songontay)
+    cv2.putText(frame,f'Finger count: {songontay}',(10,30),cv2.FONT_HERSHEY_TRIPLEX,1,(0,0,0),1)
+    cv2.imshow("One hand count",frame) 
+    if cv2.waitKey(1) == ord("c"): #chờ bấm phím c để thoát trình xem video
+        break
+cap.release()
+cv2.destroyAllWindows()
